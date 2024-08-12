@@ -86,7 +86,7 @@ option2() {
     echo -n "Masukkan target Vuln Lain : "
     read target
     output_filename=$(generate_output_filename "$target")
-    results=$(echo "$target" | gau --fc 200 2>/dev/null | urldedupe -s -qs | gf idor lfi rce rce-2 redirect secrets sqli-error sqli ssrf ssti xss xee | qsreplace FUZZ | grep FUZZ | nuclei -silent -t ~/nuclei-templates/dast/vulnerabilities/ -dast)
+    results=$(echo "$target" | gau --fc 200 2>/dev/null | urldedupe -s -qs | gf lfi redirect sqli-error sqli ssrf ssti xss xxe | qsreplace FUZZ | grep FUZZ | nuclei -silent -t ~/nuclei-templates/dast/vulnerabilities/ -dast)
 
     if [ -n "$results" ]; then
         echo "Vuln Lain" > "$output_filename"
