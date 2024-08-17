@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Token Bot Telegram dan ID Chat
-TELEGRAM_TOKEN="6843171564:AAEPB_5TOwToji-vEzmrGiHP0pJRpqy7HyM"
-CHAT_ID="463744175"
+TELEGRAM_TOKEN="token"
+CHAT_ID="chatid"
 
 type_creator_message() {
     local message="Created by Agung Magrizal"
