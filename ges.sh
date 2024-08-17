@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Token Bot Telegram dan ID Chat
-TELEGRAM_TOKEN="token"
-CHAT_ID="chatid"
+TELEGRAM_TOKEN="6843171564:AAEPB_5TOwToji-vEzmrGiHP0pJRpqy7HyM"
+CHAT_ID="463744175"
 
 type_creator_message() {
     local message="Created by Agung Magrizal"
@@ -136,15 +136,76 @@ option3() {
     fi
 }
 
+# Fungsi untuk opsi 4 (Vuln XSS dari subdomains.txt)
+option4() {
+    local input_file="subdomains.txt"
+
+    if [ ! -f "$input_file" ]; then
+        echo "File $input_file tidak ditemukan!"
+        return
+    fi
+
+    while IFS= read -r target; do
+        echo "Memproses target: $target"
+        output_filename=$(generate_output_filename "$target")
+        results=$(echo "$target" | waybackurls | urldedupe -s -qs -ne | gf xss | qsreplace '"><img src=x onerror=alert(1)>' | freq | egrep -v 'Not')
+
+        if echo "$results" | grep -q "XSS FOUND"; then
+            echo "Vuln XSS" > "$output_filename"
+            echo "$results" >> "$output_filename"
+            send_to_telegram "$output_filename" "Hasil Vuln XSS : ${target}"
+    echo
+    echo
+        else
+            type_error_message
+        fi
+    done < "$input_file"
+    echo "Proses selesai."
+    clear
+    type_creator_message
+}
+
+# Fungsi untuk opsi 5 (Vuln Lain dari subdomains.txt)
+option5() {
+    local input_file="subdomains.txt"
+
+    if [ ! -f "$input_file" ]; then
+        echo "File $input_file tidak ditemukan!"
+        return
+    fi
+
+    while IFS= read -r target; do
+        echo "Memproses target: $target"
+        output_filename=$(generate_output_filename "$target")
+        results=$(echo "$target" | gau --fc 200 2>/dev/null | urldedupe -s -qs | gf lfi redirect sqli-error sqli ssrf ssti xss xxe | qsreplace FUZZ | grep FUZZ | nuclei -silent -t ~/nuclei-templates/dast/vulnerabilities/ -dast)
+
+        if [ -n "$results" ]; then
+            echo "Vuln Lain" > "$output_filename"
+            echo "$results" >> "$output_filename"
+            send_to_telegram "$output_filename" "Hasil Vuln Lain : ${target}"
+    echo    
+    echo
+        else
+            type_error_message
+        fi
+    done < "$input_file"
+
+    echo "Proses selesai."
+    clear
+    type_creator_message
+}
+
 # Menu utama
 while true; do
     echo "Pilih Opsi:"
     echo "1) Google Dorking"
     echo "2) Vuln XSS"
     echo "3) Vuln Lain"
-    echo "4) Keluar"
+    echo "4) Vuln XSS dari subdomains.txt"
+    echo "5) Vuln Lain dari subdomains.txt"
+    echo "6) Keluar"
 
-    #Meminta input opsi dari pengguna
+    # Meminta input opsi dari pengguna
     read -p "Pilih nomor opsi: " pilihan
 
     case $pilihan in
@@ -158,6 +219,12 @@ while true; do
             option3
             ;;
         4)
+            option4
+            ;;
+        5)
+            option5
+            ;;
+        6)
             echo "Keluar..."
             break
             ;;
