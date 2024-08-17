@@ -81,7 +81,8 @@ option1() {
         curl -s "https://www.google.com/search?q=$encoded_query&start=$start" -A "Mozilla/5.0" | \
         grep -oP '(?<=<a href="/url\?q=)(https?://[^&]+)' | \
         grep -oP 'https?://[^/]*' | \
-        sed 's|https://||;s|www.||' | \
+        sed -e 's|https://||g' -e 's|http://||g' -e 's|www.||g' | \
+        grep -v 'google\.com' | \
         sort -u >> $output_file
     done
 
@@ -89,7 +90,10 @@ option1() {
     sort -u $output_file -o $output_file
 
     echo "Subdomain hasil pencarian telah disimpan di $output_file"
-    send_to_telegram "$output_file" "Hasil Google Dorking untuk query: ${query}"
+    echo "Isi file $output_file:"
+    cat $output_file
+    echo
+    read -p "Tekan Enter untuk melanjutkan..."
     clear
     type_creator_message
 }
