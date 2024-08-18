@@ -68,7 +68,7 @@ option1() {
     read target
 
     # Menjalankan subfinder dan httpx, lalu memfilter hasil
-    subfinder -d "$target" -silent | httpx -silent | sed -e 's|https://||g' -e 's|http://||g' -e 's|www.||g' > subdomains.txt
+    subfinder -d "$target" -silent | httpx -silent | sed -e 's|https://||g' -e 's|http://||g' -e 's|www.||g' | sort -u > subdomains.txt
 
     # Menampilkan hasil dan informasi
     echo "Subdomain hasil pencarian telah disimpan di subdomains.txt"
