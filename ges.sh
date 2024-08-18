@@ -62,8 +62,26 @@ type_error_message() {
     echo
 }
 
-# Fungsi untuk opsi 1 (Google Dorking)
+# Fungsi untuk opsi Find Subdomain
 option1() {
+    echo -n "Masukkan domain target (contoh: example.com): "
+    read target
+
+    # Menjalankan subfinder dan httpx, lalu memfilter hasil
+    subfinder -d "$target" -silent | httpx -silent | sed -e 's|https://||g' -e 's|http://||g' -e 's|www.||g' > subdomains.txt
+
+    # Menampilkan hasil dan informasi
+    echo "Subdomain hasil pencarian telah disimpan di subdomains.txt"
+    echo "Isi file subdomains.txt:"
+    cat subdomains.txt
+    echo
+    read -p "Tekan Enter untuk melanjutkan..."
+    clear
+    type_creator_message
+}
+
+# Fungsi untuk opsi 2 (Google Dorking)
+option2() {
     read -p "Masukkan query Google Dorking (contoh: site:*.ac.id): " query
 
     # Mengganti spasi dengan + untuk URL encoding
@@ -98,8 +116,8 @@ option1() {
     type_creator_message
 }
 
-# Fungsi untuk opsi 2 (Vuln XSS)
-option2() {
+# Fungsi untuk opsi 3 (Vuln XSS)
+option3() {
    echo -n "Masukkan target Vuln XSS : "
    read target
     output_filename=$(generate_output_filename "$target")
@@ -117,8 +135,8 @@ option2() {
     fi
 }
 
-# Fungsi untuk opsi 3 (Vuln Lain)
-option3() {
+# Fungsi untuk opsi 4 (Vuln Lain)
+option4() {
     echo -n "Masukkan target Vuln Lain : "
     read target
     output_filename=$(generate_output_filename "$target")
@@ -136,8 +154,8 @@ option3() {
     fi
 }
 
-# Fungsi untuk opsi 4 (Vuln XSS dari subdomains.txt)
-option4() {
+# Fungsi untuk opsi 5 (Vuln XSS dari subdomains.txt)
+option5() {
     local input_file="subdomains.txt"
 
     if [ ! -f "$input_file" ]; then
@@ -165,8 +183,8 @@ option4() {
     type_creator_message
 }
 
-# Fungsi untuk opsi 5 (Vuln Lain dari subdomains.txt)
-option5() {
+# Fungsi untuk opsi 6 (Vuln Lain dari subdomains.txt)
+option6() {
     local input_file="subdomains.txt"
 
     if [ ! -f "$input_file" ]; then
@@ -198,12 +216,13 @@ option5() {
 # Menu utama
 while true; do
     echo "Pilih Opsi:"
-    echo "1) Google Dorking"
-    echo "2) Vuln XSS"
-    echo "3) Vuln Lain"
-    echo "4) Vuln XSS dari subdomains.txt"
-    echo "5) Vuln Lain dari subdomains.txt"
-    echo "6) Keluar"
+    echo "1) Find Subdomain"
+    echo "2) Google Dorking"
+    echo "3) Vuln XSS"
+    echo "4) Vuln Lain"
+    echo "5) Vuln XSS dari subdomains.txt"
+    echo "6) Vuln Lain dari subdomains.txt"
+    echo "7) Keluar"
 
     # Meminta input opsi dari pengguna
     read -p "Pilih nomor opsi: " pilihan
@@ -225,6 +244,9 @@ while true; do
             option5
             ;;
         6)
+            option6
+            ;;
+        7)
             echo "Keluar..."
             break
             ;;
